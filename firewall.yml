@@ -1,0 +1,91 @@
+---
+- hosts: Ubuntu
+  become: yes
+  tasks:
+
+    - name: install updates (Ubuntu)
+      tags: always
+      apt:
+        update_cache: yes
+      changed_when: false
+
+    - name: install ufw on Ubuntu
+      apt:
+        name: ufw
+        state: present
+
+    - name: Allow and Enable ufw
+      ufw:
+        state: enabled
+        policy: allow
+
+    - name: Set logging
+      ufw:
+        logging: 'on'
+
+    - ufw:
+        rule: reject
+        port: auth
+        log: yes
+
+    - name: Deny TCP
+      ufw:
+        rule: deny
+        port: telnet
+        proto: tcp
+
+    - ufw:
+        rule: limit
+        port: ssh
+        proto: tcp
+
+    - name: Allow ssh
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+- hosts: CentOS
+  become: yes
+  tasks:
+
+    - name: update repository index (CentOS)
+      tags: always
+      yum:
+        update_cache: yes
+      changed_when: false
+
+    - name: install ufw on CentOS
+      yum:
+        name: ufw
+        state: present
+
+    - name: Allow and Enable ufw
+      ufw:
+        state: enabled
+        policy: allow
+
+    - name: set logging
+      ufw:
+        logging: 'on'
+
+    - ufw:
+        rule: reject
+        port: auth
+        log: yes
+
+    - name: Deny TCP
+      ufw:
+        rule: deny
+        port: telnet
+        proto: tcp
+
+    - ufw:
+        rule: limit
+        port: ssh
+        proto: tcp
+
+    - name: allow OpenSSH rule
+      ufw:
+        rule: allow
+        name: SSH
+
